@@ -1,0 +1,116 @@
+﻿@model ReleaseNotes.Generator.HTML.Models.ReleaseNotesViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="header bg-dark-blue">
+    <div class="logo">
+        <img src="https://peripherex.co.uk/wp-content/uploads/2018/01/YourLogoHere.png" alt="Your logo" class="fusion-logo-1x fusion-standard-logo"  style="height: 150px">
+    </div>
+    <h1 style="margin-bottom: -15px;">Last Release and Bugfixes</h1>
+    <span style="color: #7b7b7b;font-size: 12px;">@DateTime.Now.ToString("dd.MM.yyyy, HH:mm:ss")</span>
+    <div style="text-align: center; font-size: 15px;">
+        <span style="color: #0b0;">TAG: @Model.ReleaseName</span>
+    </div>
+    <img src="https://vsrm.dev.azure.com/rndskk/_apis/public/Release/badge/9d569659-8b1f-4045-89a7-7bf2c488e0cc/12/133" />
+</div>
+<div class="content">
+    <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+        <p>@Model.ReleaseComment</p>
+    </div>
+    <table style="max-width: 100%;" width="100%" cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr>
+                <td style="border-width: 0; padding-left: 0px; padding-right: 0px; padding-bottom: 20px; background-color: #ffffff; " width="100%">
+                    <div style="color: #000000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+                        <span class="info-btn">Changes</span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <td style="padding-top: 0; padding-left: 0; padding-right: 0; padding-bottom: 0; " width="100%">
+                    <table style="max-width: 100%; " width="100%" cellspacing="0" cellpadding="0">
+                        <tbody>
+
+                            @if (Model.Changes == null || Model.Changes.Count == 0)
+                            {
+                                <tr>
+                                    <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+                                        - No changes.
+                                    </div>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var change in Model.Changes)
+                                {
+                                    <tr>
+                                        <td style="vertical-align: top; padding-top: 0px; border-width: 0; padding-left: 0px; padding-right: 0px; padding-bottom: 5px; background-color: #ffffff; " width="20%">
+                                            <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+                                                <a href="#"><span style="color: #256cb4;font-weight:bold;font-size: 16px;font-family:Consolas">@change.Id.Sha.Substring(0, 8)</span></a>
+                                            </div>
+                                        </td>
+                                        <td style="padding-top: 0px; border-width: 0; padding-left: 0px; padding-right: 0px; padding-bottom: 5px; background-color: #ffffff; " width="80%">
+                                            <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+                                                @change.Message
+                                            </div>
+                                        </td>
+                                        <td style="vertical-align: top;padding-top: 0px; border-width: 0; padding-left: 0px; padding-right: 0px; padding-bottom: 5px; background-color: #ffffff; " width="80%">
+                                            <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+                                                <a href="#">@change.Author.Name</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table width="auto" align="center">
+        <tbody>
+            <tr>
+                <td style="padding-left: 5px; padding-right: 5px; ">
+                    <a href="https://facebook.com" style="color: #85abeb; display: inline-block; vertical-align: bottom; " target="_blank">
+                        <img src="https://cdn1.ourmailsender.com/siteContent/assets/templates/socialMediaIcons/faceBook-square-color.png" style="display: inline-block; vertical-align: bottom; " title="Facebook" width="25">
+                    </a>
+                </td>
+                <td style="padding-left: 5px; padding-right: 5px; ">
+                    <a href="https://twitter.com" style="color: #85abeb; display: inline-block; vertical-align: bottom; " target="_blank">
+                        <img src="https://cdn1.ourmailsender.com/siteContent/assets/templates/socialMediaIcons/twitter-square-color.png" style="display: inline-block; vertical-align: bottom; " title="Twitter" width="25">
+                    </a>
+                </td>
+                <td style="padding-left: 5px; padding-right: 5px; ">
+                    <a href="https://linkedin.com" style="color: #85abeb; display: inline-block; vertical-align: bottom; " target="_blank">
+                        <img src="https://cdn1.ourmailsender.com/siteContent/assets/templates/socialMediaIcons/linkedin-square-color.png" style="display: inline-block; vertical-align: bottom; " title="LinkedIn" width="25">
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table style="max-width: 100%; " width="100%" cellspacing="0" cellpadding="0" align="center">
+        <tbody>
+            <tr>
+                <td width="100%">
+                    <table style="max-width: 100%; " width="100%" cellspacing="0" cellpadding="0" align="center">
+                        <tbody>
+                            <tr>
+                                <td style="padding-top: 0px; padding-left: 0px; padding-right: 0px; padding-bottom: 0px; background-color: transparent; " width="100%">
+                                    <div style="color: #000000; position: relative; font-size: 14px;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
+                                        <div style="text-align: center; font-size:10px;margin-top:10px">This message was autogenerated by ReleasesNoteGenerator</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
