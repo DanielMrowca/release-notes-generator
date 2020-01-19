@@ -1,2 +1,4 @@
 # Release notes generator
-Simple app for creating release note as HTML file
+Simple app for creating release notes as HTML file.
+
+### More features comming soon :)
