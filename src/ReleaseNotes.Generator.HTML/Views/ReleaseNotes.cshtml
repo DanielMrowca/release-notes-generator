@@ -1,4 +1,5 @@
 ﻿@model ReleaseNotes.Generator.HTML.Models.ReleaseNotesViewModel
+@using ReleaseNotes.Generator.HTML.Helpers;
 
 @{
     Layout = "_Layout";
@@ -54,8 +55,8 @@
                                             </div>
                                         </td>
                                         <td style="padding-top: 0px; border-width: 0; padding-left: 0px; padding-right: 0px; padding-bottom: 5px; background-color: #ffffff; " width="80%">
-                                            <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; mso-line-height-rule: exactly; line-height: 150%;letter-spacing: normal; ">
-                                                @change.Message
+                                            <div style="color: #000; position: relative; font-size: 14px; textAlign: left;  font-weight: normal; ">
+                                                @Html.Raw(Html.EncodedMultiLineText(change.Message.Trim()))
                                             </div>
                                         </td>
                                         <td style="vertical-align: top;padding-top: 0px; border-width: 0; padding-left: 0px; padding-right: 0px; padding-bottom: 5px; background-color: #ffffff; " width="80%">

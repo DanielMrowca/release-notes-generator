@@ -10,7 +10,7 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "commandLineArgs": "-p \"C:\\Users\\user\\source\\repos\\SKK\\SKK.Hive.Cloud.Application\" -b \"origin/autobuild_develop\" --releaseName \"TestowyRilis\" --excludeMerges true",
+      "commandLineArgs": "-p \"C:\\Users\\user\\source\\repos\\SKK\\SKK.Hive.Cloud.Application\" -b \"origin/develop\" --releaseName \"TestowyRilis\" --startTag \"1.0-CI-20200122-124013-Debug-autobuild_develop\" --endTag \"1.0-CI-20200121-105723-Debug-autobuild_develop\"",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

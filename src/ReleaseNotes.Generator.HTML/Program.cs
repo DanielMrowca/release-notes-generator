@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ReleaseNotes.Generator.HTML.Models;
 using System.Reflection;
-using System.Drawing;
+using ReleaseNotes.Generator.HTML.Extensions;
 
 namespace ReleaseNotes.Generator.HTML
 {
@@ -80,6 +80,13 @@ namespace ReleaseNotes.Generator.HTML
         static async Task GenerateReleaseNotes(Options options, IServiceProvider serviceProvider)
         {
             List<Commit> commits = new List<Commit>();
+            bool isBetweenTagFilter = false;
+            int endCommitIndex = 0;
+            bool isLast = false;
+            bool isMerge = false;
+            bool excludeMerges = options.ExcludeMerges != null && (bool)options.ExcludeMerges;
+
+
             try
             {
                 using (var repo = new Repository(options.RepositoryPath))
@@ -87,30 +94,45 @@ namespace ReleaseNotes.Generator.HTML
                     var tags = repo.Tags.OrderByDescending(x => x.FriendlyName).ToList();
                     var branch = repo.Branches.SingleOrDefault(x => x.FriendlyName == options.BranchName);
 
-                    var endCommitId = string.IsNullOrWhiteSpace(options.EndCommitId) ? ((Commit)tags[2].Target).Id.Sha : options.EndCommitId;
-                    Commit startCommit = branch.Tip;
-                    Commit endCommit = branch.Commits.FirstOrDefault(x => x.Id.Sha == endCommitId);
+                    if (branch == null)
+                        throw new NotFoundException($"Specified branch '{options.BranchName}' was not found.");
+                    Commands.Checkout(repo, branch);
+                    isBetweenTagFilter = !string.IsNullOrWhiteSpace(options.StartTag) && !string.IsNullOrWhiteSpace(options.EndTag);
 
-                    bool isLast = false;
-                    bool isMerge = false;
-                    bool excludeMerges = options.ExcludeMerges != null && (bool)options.ExcludeMerges;
-
-                    var com = branch.Commits.OrderByDescending(x => x.Committer.When).ToList();
-                    var startCommitIndex = com.IndexOf(startCommit);
-                    var endCommitIndex = com.IndexOf(endCommit);
-
-                    for (int i = startCommitIndex; i < endCommitIndex + 1; i++)
+                    var commitFilter = new CommitFilter()
                     {
-                        var commit = com[i];
-                        isLast = commit.Id == endCommit.Id;
-                        isMerge = commit.Parents.Count() > 1;
+                        SortBy = CommitSortStrategies.Topological,
+                    };
 
-                        if (!isMerge || (isMerge && !excludeMerges))
-                            commits.Add(commit);
-
-                        if (isLast)
-                            break;
+                    if (isBetweenTagFilter)
+                    {
+                        tags.AsserTagExists(options.StartTag).AsserTagExists(options.EndTag);
+                        commitFilter.IncludeReachableFrom = tags.GetTag(options.StartTag);
+                        commitFilter.ExcludeReachableFrom = tags.GetTag(options.EndTag);
                     }
+
+                    var logs = repo.Commits.QueryBy(commitFilter).ToList();
+
+                    if (logs != null & logs.Any())
+                    {
+                        var endCommitId = isBetweenTagFilter ? logs.LastOrDefault().Id.Sha : string.IsNullOrWhiteSpace(options.EndCommitId) ? ((Commit)tags[2].Target).Id.Sha : options.EndCommitId;
+                        Commit endCommit = branch.Commits.FirstOrDefault(x => x.Id.Sha == endCommitId);
+                        endCommitIndex = logs.IndexOf(endCommit);
+
+                        for (int i = 0; i < endCommitIndex + 1; i++)
+                        {
+                            var commit = logs[i];
+                            isLast = commit.Id == endCommit.Id;
+                            isMerge = commit.Parents.Count() > 1;
+
+                            if (!isMerge || (isMerge && !excludeMerges))
+                                commits.Add(commit);
+
+                            if (isLast)
+                                break;
+                        }
+                    }
+
 
                     using (var serviceScope = serviceProvider.CreateScope())
                     {
@@ -155,6 +177,8 @@ namespace ReleaseNotes.Generator.HTML
                 Console.ResetColor();
             }
         }
+
+
 
         private static void WriteLogo()
         {
@@ -201,8 +225,13 @@ namespace ReleaseNotes.Generator.HTML
         [Option("excludeMerges", Default = true, HelpText = "Set false if do not exclude merge commit from release notes.")]
         public bool? ExcludeMerges { get; set; }
 
-        [Option("endCommitId", HelpText = "Set false if do not exclude merge commit from release notes.")]
+        [Option("endCommitId", HelpText = "Commit id to filter from head commit.")]
         public string EndCommitId { get; set; }
+
+        [Option("startTag", HelpText = "Start tag name. You must specify endTag too!")]
+        public string StartTag { get; set; }
+        [Option("endTag", HelpText = "End tag name. You must specify startTag too!")]
+        public string EndTag { get; set; }
 
     }
 }
