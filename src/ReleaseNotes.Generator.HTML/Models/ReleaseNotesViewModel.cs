@@ -7,6 +7,6 @@ namespace ReleaseNotes.Generator.HTML.Models
     {
         public string ReleaseName { get; set; }
         public string ReleaseComment { get; set; }
-        public List<Commit> Changes { get; set; }
+        public List<CommitViewModel> Changes { get; set; }
     }
 }

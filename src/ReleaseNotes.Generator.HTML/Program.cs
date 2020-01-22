@@ -138,11 +138,19 @@ namespace ReleaseNotes.Generator.HTML
                     {
                         var renderer = serviceScope.ServiceProvider.GetRequiredService<IViewRenderService>();
 
-
+                        var uri = new Uri(repo.Network.Remotes.FirstOrDefault().PushUrl);
+                        var repoUri = $"{uri.Scheme}://{uri.Host}/{uri.PathAndQuery}";
                         var html = await renderer.RenderToStringAsync("Views/ReleaseNotes.cshtml", new ReleaseNotesViewModel()
                         {
                             ReleaseName = options.ReleaseName,
-                            Changes = commits,
+                            Changes = commits.Select(x => new CommitViewModel()
+                            {
+                                Id = x.Id.Sha,
+                                AuthorName = x.Author.Name,
+                                AuthorUrl = x.Author.Email,
+                                CommitUrl = $"{repoUri}/commit/{x.Id.Sha}",
+                                Message = x.Message
+                            }).ToList(),
                             ReleaseComment = options.ReleaseComment
                         });
 
